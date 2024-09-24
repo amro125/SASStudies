@@ -17,8 +17,10 @@ class robotsUtils:
             self.xArm = XArmAPI(self.arm)
         self.sim = sim
         self.IPtoSEND = "127.0.0.1"
-        self.port = 5001
-        self.client = udp_client.SimpleUDPClient(self.IPtoSEND, self.port)
+        self.ports = (5010, 5011, 5012, 5013)
+        self.routes = ('melody', 'pitch', 'rhythm', 'rhythm')
+        self.client = ...
+
     
     def setupBot(self,enableState):
         self.xArm.set_simulation_robot(on_off=False)
@@ -95,7 +97,7 @@ class robotsUtils:
         # return traj,sound
     
     def movexArm(self, traj,sound):
-        
+        self.client = udp_client.SimpleUDPClient(self.IPtoSEND, self.ports[sound - 1])
         soundarr = np.linspace(0., sound, len(traj))
         count = 0
         if sound > 0:
@@ -111,7 +113,7 @@ class robotsUtils:
                 print(i)
                 if sound > 0:
                     print(soundarr[count])
-                    self.client.send_message("/pitch",soundarr[count])
+                    self.client.send_message(f"/{self.routes[sound - 1]}",soundarr[count])
             
             count +=1
         
@@ -119,7 +121,7 @@ class robotsUtils:
                 tts = time.time() - start_time
                 time.sleep(0.0001)
         if sound > 0:
-            self.client.send_message("/off",0)
+            self.client.send_message("/on",0)
         
                 
         
