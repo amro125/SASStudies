@@ -11,20 +11,20 @@ stepT = 0.004
 class robotsUtils:
     def __init__(self, IPadress, sim = False):
         self.arm = IPadress
-        # self.initPos =  startpos
+        self.initPos =  [0,0,0,90,0,0,0]
         if sim == False:
             from xarm.wrapper import XArmAPI
             self.xArm = XArmAPI(self.arm)
         self.sim = sim
-        self.IPtoSEND = "127.0.0.1"
-        self.ports = (5010, 5011, 5012, 5013)
-        self.routes = ('melody', 'pitch', 'rhythm', 'rhythm')
+        self.IPtoSEND = "127.0.0.1" # "192.168.1.50"
+        self.ports = (5010, 5011, 5012, 5013, 5014, 5015, 5016, 5017, 5018, 5019)
+        #this is indexed at 1
+        self.routes = ('melody', 'pitch', 'rhythm', 'melody', 'melody', 'melody', 'melody', 'melody', 'melody', 'melody')
         self.client = ...
-
     
-    def setupBot(self,enableState):
+    def setupBot(self):
         self.xArm.set_simulation_robot(on_off=False)
-        self.xArm.motion_enable(enable=enableState)
+        self.xArm.motion_enable(enable=True)
         self.xArm.clean_warn()
         self.xArm.clean_error()
         self.xArm.set_mode(0)
@@ -32,6 +32,7 @@ class robotsUtils:
         self.xArm.set_servo_angle(angle=self.initPos, wait=True, speed=20, acceleration=0.5, is_radian=False)
         time.sleep(0.1)
         self.realTimeMode()
+        
     
     def realTimeMode(self):
         self.xArm.set_mode(1)
@@ -79,7 +80,7 @@ class robotsUtils:
             timearray.append(p[1])
             soundarray.append(p[2])
         if self.sim == False:
-            IP = self.arm.position
+            IP = self.xArm.position
         else:
             IP = [0,0,0,0,0,0]
         traj = self.Singlep2ptraj(IP,pointarray[0],timearray[0])
@@ -98,30 +99,36 @@ class robotsUtils:
     
     def movexArm(self, traj,sound):
         self.client = udp_client.SimpleUDPClient(self.IPtoSEND, self.ports[sound - 1])
-        soundarr = np.linspace(0., sound, len(traj))
+        soundarr = np.linspace(0., 1., len(traj))
         count = 0
+        offset = 0.025
         if sound > 0:
-            self.client.send_message("/on",1)
+            self.client.send_message("/on",1.)
+            print("Setting ON to 1")
         for i in traj:
             start_time = time.time()
             tts = time.time() - start_time
             if self.sim == False:
                 self.xArm.set_servo_cartesian(i, speed=100, mvacc=2000)
+                print(i)
                 if sound > 0:
-                    send = soundarr[count]
+                    # send = soundarr[count]
+                    self.client.send_message(f"/{self.routes[sound - 1]}",soundarr[count] + offset)
             else:
                 print(i)
                 if sound > 0:
                     print(soundarr[count])
-                    self.client.send_message(f"/{self.routes[sound - 1]}",soundarr[count])
+                    self.client.send_message(f"/{self.routes[sound - 1]}",soundarr[count] + offset)
             
             count +=1
         
             while tts < 0.004:
                 tts = time.time() - start_time
                 time.sleep(0.0001)
+        time.sleep(5.)
         if sound > 0:
-            self.client.send_message("/on",0)
+            self.client.send_message("/on",0.)
+            print("Setting ON to 0")
         
                 
         
