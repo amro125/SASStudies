@@ -17,9 +17,10 @@ class robotsUtils:
             self.xArm = XArmAPI(self.arm)
         self.sim = sim
         self.IPtoSEND = "127.0.0.1" # "192.168.1.50"
-        self.ports = (5010, 5011, 5012, 5013, 5014, 5015, 5016, 5017, 5018, 5019)
+        per = 4
+        self.ports = tuple(10001 + i for i in range(per)) + tuple(11001 + i for i in range(per)) + tuple(12001 + i for i in range(per))
         #this is indexed at 1
-        self.routes = ('melody', 'pitch', 'rhythm', 'melody', 'melody', 'melody', 'melody', 'melody', 'melody', 'melody')
+        self.routes = (('melody',) * 8) + (('pitch',) * 4)
         self.client = ...
     
     def setupBot(self):
