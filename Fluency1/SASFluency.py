@@ -20,7 +20,7 @@ def main(xarm):
     for demo in demos:
         # input()
         sound = mapping[demo]
-        t = 3 * random.random() + 3
+        t = 3 * random.random() + 4
         delay = random.randrange(0, 5)
         time.sleep(delay)
         print("Doing trajecrtory " + demo)
