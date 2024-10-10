@@ -1,3 +1,5 @@
+from random import random
+
 import numpy as np
 import math
 import time
@@ -65,8 +67,8 @@ class robotsUtils:
 
 
     def Singlep2ptraj(self,pi,pf,t):
-        trajectories = [None]*6
-        for i in range(6):
+        trajectories = [None]*7
+        for i in range(7):
             trajectories[i]=self.fifth_poly(pi[i],pf[i],0,0,t)
         
         trajectories = np.array(trajectories).T
@@ -81,9 +83,9 @@ class robotsUtils:
             timearray.append(p[1])
             soundarray.append(p[2])
         if self.sim == False:
-            IP = self.xArm.position
+            IP = self.xArm.angles
         else:
-            IP = [0,0,0,0,0,0]
+            IP = [0,0,0,90,0,0,0]
         traj = self.Singlep2ptraj(IP,pointarray[0],timearray[0])
         sound = list(np.linspace(0., 0., math.ceil(timearray[0]/stepT)))
         self.movexArm(traj,soundarray[0])
@@ -110,7 +112,7 @@ class robotsUtils:
             start_time = time.time()
             tts = time.time() - start_time
             if self.sim == False:
-                self.xArm.set_servo_cartesian(i, speed=100, mvacc=2000)
+                self.xArm.set_servo_angle_j(angles=i, is_radian=False)
                 print(i)
                 if sound > 0:
                     # send = soundarr[count]
@@ -126,7 +128,9 @@ class robotsUtils:
             while tts < 0.004:
                 tts = time.time() - start_time
                 time.sleep(0.0001)
-        time.sleep(5.)
+        delay = 2.5 * random() + 5
+        time.sleep(delay)
+        # time.sleep(5.)
         if sound > 0:
             self.client.send_message("/on",0.)
             print("Setting ON to 0")

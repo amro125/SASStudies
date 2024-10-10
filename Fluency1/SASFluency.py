@@ -17,20 +17,22 @@ mapping = {f'{types[i // per]}{i % per + 1}': (i + 1) for i in range(div * per)}
 def main(xarm):
     demos = list(mapping)
     random.shuffle(demos)
+    print(demos)
     for demo in demos:
-        # input()
+        if 'H' in demo:
+            continue
         sound = mapping[demo]
-        t = 3 * random.random() + 4
-        delay = random.randrange(0, 5)
-        time.sleep(delay)
+        t = 3 * random.random() + 3
+        # delay = random.randrange(0, 5)
+        # time.sleep(delay)
         print("Doing trajecrtory " + demo)
-        points = [ [[586,17.9,689,179.6,-71,2],3,0], [[-57,571,456,-160,-39,88],t,sound],[[586,17.9,689,179.6,-71,2],3,0]]
+        points = [ [[0,35,15,125,-23,0,45],3,0], [[95,15,30,85,-23,-28,45],t,sound],[[0,35,15,125,-23,0,45],3,0]  ]
         xarm.p2pTraj(points)
 
 
 
 if __name__ == "__main__":
-    simulation = True
+    simulation = False
     xarm = SASutils.robotsUtils("192.168.1.215",simulation)
     if not simulation:
         xarm.setupBot()
