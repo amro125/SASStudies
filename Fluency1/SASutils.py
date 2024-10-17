@@ -20,9 +20,9 @@ class robotsUtils:
         self.sim = sim
         self.IPtoSEND = "127.0.0.1" # "192.168.1.50"
         per = 4
-        self.ports = tuple(10001 + i for i in range(per)) + tuple(11001 + i for i in range(per)) + tuple(12001 + i for i in range(per))
+        self.ports = tuple(10001 + i for i in range(per)) + tuple(11001 + i for i in range(per)) + tuple(12001 + i for i in range(per)) + tuple(13001 + i for i in range(per))
         #this is indexed at 1
-        self.routes = (('melody',) * 8) + (('pitch',) * 4)
+        self.routes = (('melody',) * 8) + (('pitch',) * 8)
         self.client = ...
     
     def setupBot(self):
@@ -105,7 +105,7 @@ class robotsUtils:
         soundarr = np.linspace(0., 1., len(traj))
         count = 0
         offset = 0.025
-        if sound > 0:
+        if sound > 0 and self.ports[sound - 1] % 1000 not in (13,):
             self.client.send_message("/on",1.)
             print("Setting ON to 1")
         for i in traj:
@@ -131,7 +131,7 @@ class robotsUtils:
         delay = 2.5 * random() + 5
         time.sleep(delay)
         # time.sleep(5.)
-        if sound > 0:
+        if sound > 0 and self.ports[sound - 1] % 1000 not in (13,):
             self.client.send_message("/on",0.)
             print("Setting ON to 0")
         
