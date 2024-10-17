@@ -105,7 +105,7 @@ class robotsUtils:
         soundarr = np.linspace(0., 1., len(traj))
         count = 0
         offset = 0.025
-        if sound > 0 and self.ports[sound - 1] % 1000 not in (13,):
+        if sound > 0 and self.ports[sound - 1] // 1000 not in (13,):
             self.client.send_message("/on",1.)
             print("Setting ON to 1")
         for i in traj:
@@ -131,7 +131,7 @@ class robotsUtils:
         delay = 2.5 * random() + 5
         time.sleep(delay)
         # time.sleep(5.)
-        if sound > 0 and self.ports[sound - 1] % 1000 not in (13,):
+        if sound > 0 and self.ports[sound - 1] // 1000 not in (13,):
             self.client.send_message("/on",0.)
             print("Setting ON to 0")
         
