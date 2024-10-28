@@ -7,7 +7,7 @@ import random
 
 # mapping = {'H1': 1, 'M1': 8, 'S1': 2}
 
-types = "HMS"
+types = "HMST" #HMST
 div = len(types)
 per = 4
 mapping = {f'{types[i // per]}{i % per + 1}': (i + 1) for i in range(div * per)}
@@ -17,17 +17,36 @@ mapping = {f'{types[i // per]}{i % per + 1}': (i + 1) for i in range(div * per)}
 def main(xarm):
     demos = list(mapping)
     random.shuffle(demos)
+    d2 = demos.copy()
+    random.shuffle(d2)
+    demos += d2
     print(demos)
+    demos = ['M1','M2','M3','M4']
+    
+    # demos = ['S1','S2','S3','S4']
+    random.shuffle(demos)
+    d2 = demos.copy()
+    random.shuffle(d2)
+    demos += d2
     for demo in demos:
-        if 'H' in demo:
+        if demo[0] in ('H', 'T'):
             continue
+        
+        # demo = 'M2'
+
         sound = mapping[demo]
+        print(sound)
+        
         t = 3 * random.random() + 3
+        traj_option = [[95,15,30,85,-23,-28,45],[108,50,10,100,-11,-35,45],[84,25,15,100,-12,0,25] ]
+        traj_choice = random.randrange(2)
+        print(traj_choice)
         # delay = random.randrange(0, 5)
         # time.sleep(delay)
         print("Doing trajecrtory " + demo)
-        points = [ [[0,35,15,125,-23,0,45],3,0], [[95,15,30,85,-23,-28,45],t,sound],[[0,35,15,125,-23,0,45],3,0]  ]
+        points = [ [[0,35,15,125,-23,0,45],3,0], [traj_option[traj_choice],t,sound],[[0,35,15,125,-23,0,45],3,0]  ]
         xarm.p2pTraj(points)
+        
 
 
 
