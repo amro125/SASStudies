@@ -15,37 +15,79 @@ mapping = {f'{types[i // per]}{i % per + 1}': (i + 1) for i in range(div * per)}
 
 
 def main(xarm):
-    demos = list(mapping)
-    random.shuffle(demos)
-    d2 = demos.copy()
-    random.shuffle(d2)
-    demos += d2
-    print(demos)
-    demos = ['M1','M2','M3','M4']
+    # demosMelody = ['M1','M2','M3','M4']
+    # demosScale = ['S1','S2','S3','S4']
+    # demosSilence = ['H1']
     
-    # demos = ['S1','S2','S3','S4']
-    random.shuffle(demos)
-    d2 = demos.copy()
-    random.shuffle(d2)
-    demos += d2
-    for demo in demos:
-        if demo[0] in ('H', 'T'):
-            continue
+    
+    # demosTimbre = ['T1', 'T2', 'T3', 'T4']
+    demosMelody = ['M1','M2','M3','M4']
+    demosScale = ['S1','S2','S3','S4']
+    demosSilence = ['n', 'n', 'n', 'n']
+    options = [demosScale]
+    # options = [demosMelody,demosScale,demosSilence]
+    demos = []
+    
+    for demo in options:
+        # print(demo[0])
         
-        # demo = 'M2'
-
-        sound = mapping[demo]
-        print(sound)
+        test = list(demo.copy())
+        random.shuffle(test)
+        test2 = list(demo.copy())
+        random.shuffle(test2)
+        demos.append(test+test2)
+    neworder = demos.copy()
+    random.shuffle(neworder)
+    print(neworder)
+    neworderp2 = neworder.copy()
+    random.shuffle(neworderp2)
+    neworder += neworderp2
+    print(neworder)
+    # input("press Enter to start")
+    # a
+    for demos in neworder:
+        input("Ready to start")
+        # demos = list(mapping)
+        # random.shuffle(demos)
+        # d2 = demos.copy()
+        # random.shuffle(d2)
+        # demos += d2
+        # print(demos)
         
-        t = 3 * random.random() + 3
-        traj_option = [[95,15,30,85,-23,-28,45],[108,50,10,100,-11,-35,45],[84,25,15,100,-12,0,25] ]
-        traj_choice = random.randrange(2)
-        print(traj_choice)
-        # delay = random.randrange(0, 5)
-        # time.sleep(delay)
-        print("Doing trajecrtory " + demo)
-        points = [ [[0,35,15,125,-23,0,45],3,0], [traj_option[traj_choice],t,sound],[[0,35,15,125,-23,0,45],3,0]  ]
-        xarm.p2pTraj(points)
+        # demos = ['S1','S2','S3','S4']
+        # random.shuffle(demos)
+        # d2 = demos.copy()
+        # random.shuffle(d2)
+        # demos += d2
+        count = 0
+        speed  = list(np.linspace(3.5,6.6,4))
+        random.shuffle(speed)
+        speed += speed
+        delay  = list(np.linspace(1,5,4))
+        random.shuffle(delay)
+        delay += delay
+        print(len(delay))
+        # input("dfgdgf")
+        for demo in demos:
+            # if demo[0] in ('H', 'T'):
+            #     continue
+            # demo = 'M2'
+            if demo == 'n':
+                sound = 0
+            else:
+                sound = mapping[demo]
+            print(sound)
+            
+            t = 3 * random.random() + 3
+            traj_option = [[95,15,30,85,-23,-28,0],[108,50,10,100,-11,-35,0],[84,25,15,100,-12,0,0] ]
+            traj_choice = random.randrange(2)
+            print(traj_choice)
+            # delay = random.randrange(0, 5)
+            time.sleep(delay[count])
+            print("Doing trajecrtory " + demo)
+            points = [ [[0,35,15,125,-23,0,0],3,0], [traj_option[traj_choice],speed[count],sound],[[0,35,15,125,-23,0,0],2,0],[[0,35,15,125,-23,30,-180],1,0]  ]
+            xarm.p2pTraj(points)
+            count += 1
         
 
 

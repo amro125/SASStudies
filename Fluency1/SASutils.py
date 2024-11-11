@@ -1,5 +1,3 @@
-from random import random
-
 import numpy as np
 import math
 import time
@@ -20,7 +18,7 @@ class robotsUtils:
         self.sim = sim
         self.IPtoSEND = "127.0.0.1" # "192.168.1.50"
         per = 4
-        self.ports = tuple(10001 + i for i in range(per)) + tuple(11001 + i for i in range(per)) + tuple(12001 + i for i in range(per)) + tuple(13001 + i for i in range(per))
+        self.ports = tuple(10001 + i for i in range(per)) + tuple(11001 + i for i in range(per)) + tuple(12001 + i for i in range(per)) + tuple(1001 + i for i in range(per))
         #this is indexed at 1
         self.routes = (('melody',) * 8) + (('pitch',) * 8)
         self.client = ...
@@ -44,6 +42,9 @@ class robotsUtils:
 
     def probabilityChoice(self):
         choices = list(range(len()))
+        
+    def getWeight(self):
+        print(self.xArm.joints_torque)
 
 
     def fifth_poly(self, q_i, q_f, v_i, vf, t):
@@ -85,7 +86,7 @@ class robotsUtils:
         if self.sim == False:
             IP = self.xArm.angles
         else:
-            IP = [0,0,0,90,0,0,0]
+            IP = [0,0,0,0,0,0,0]
         traj = self.Singlep2ptraj(IP,pointarray[0],timearray[0])
         sound = list(np.linspace(0., 0., math.ceil(timearray[0]/stepT)))
         self.movexArm(traj,soundarray[0])
@@ -102,10 +103,19 @@ class robotsUtils:
     
     def movexArm(self, traj,sound):
         self.client = udp_client.SimpleUDPClient(self.IPtoSEND, self.ports[sound - 1])
-        soundarr = np.linspace(0., 1., len(traj))
         count = 0
         offset = 0.025
-        if sound > 0 and self.ports[sound - 1] // 1000 not in (13,):
+        if sound:
+            is_timbre = self.ports[sound - 1] // 1000 in (1,)
+            if not is_timbre:
+                soundarr = np.linspace(0., 1., len(traj))
+            else:
+                print("FLAG")
+                soundarrp1 = np.linspace(0., 1., (int(len(traj)/2)))
+                soundarr  = np.concatenate((soundarrp1,np.flip(soundarrp1)))
+                while len(soundarr) < len(traj):
+                    np.append(soundarr,[0.])
+        if sound > 0 and not is_timbre:
             self.client.send_message("/on",1.)
             print("Setting ON to 1")
         for i in traj:
@@ -113,14 +123,15 @@ class robotsUtils:
             tts = time.time() - start_time
             if self.sim == False:
                 self.xArm.set_servo_angle_j(angles=i, is_radian=False)
-                print(i)
+                # print(i)
                 if sound > 0:
                     # send = soundarr[count]
+                    print((f"/{self.routes[sound - 1]}",soundarr[count] + offset))
                     self.client.send_message(f"/{self.routes[sound - 1]}",soundarr[count] + offset)
             else:
                 print(i)
                 if sound > 0:
-                    print(soundarr[count])
+                    # print(soundarr[count])
                     self.client.send_message(f"/{self.routes[sound - 1]}",soundarr[count] + offset)
             
             count +=1
@@ -128,10 +139,8 @@ class robotsUtils:
             while tts < 0.004:
                 tts = time.time() - start_time
                 time.sleep(0.0001)
-        delay = 2.5 * random() + 5
-        time.sleep(delay)
-        # time.sleep(5.)
-        if sound > 0 and self.ports[sound - 1] // 1000 not in (13,):
+        time.sleep(1)
+        if sound > 0 and not is_timbre:
             self.client.send_message("/on",0.)
             print("Setting ON to 0")
         
