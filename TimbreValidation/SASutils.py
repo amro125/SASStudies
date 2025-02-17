@@ -86,7 +86,7 @@ class robotsUtils:
         if self.sim == False:
             IP = self.xArm.angles
         else:
-            IP = [self.initPos]
+            IP = self.initPos
         traj = self.Singlep2ptraj(IP,pointarray[0],timearray[0])
         sound = list(np.linspace(0., 0., math.ceil(timearray[0]/stepT)))
         self.movexArm(traj,soundarray[0])
